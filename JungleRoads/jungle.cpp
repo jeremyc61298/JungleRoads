@@ -78,10 +78,42 @@ void RoadMap::inputRoads(ifstream &fin)
 int RoadMap::findMinimumTotalCost()
 {
 	set<char> t;
+	// Root node will be last node
+	values[villages.size() - 1] = 0;
 
+	while (t != villages)
+	{
+		char selected;
+		int smallestValue = INT_MAX;
+		for (char village : villages)
+		{
+			if (t.find(village) == t.end() && values[village - 'A'] < smallestValue)
+			{
+				selected = village;
+				smallestValue = values[village - 'A'];
+			}
+		}
+		
+		t.insert(selected);
+		for (char village : villages)
+		{
+			// If the village is not in set "t" and there is a road from selected->village 
+			// which has a cost less than value[village]
+			if (t.find(village) == t.end() && adjacency[selected - 'A'][village - 'A'] < values[village - 'A'])
+			{
+				parents[selected - 'A'] = selected;
+				values[village - 'A'] = adjacency[selected - 'A'][village - 'A'];
+			}
+		}
+	}
 
+	int totalCost = 0;
+	for (int cost : values)
+	{
+		totalCost += cost;
+	}
 
-	return -1;
+	return totalCost;
 }
 
 template <typename T>
