@@ -2,15 +2,103 @@
 // jungle.cpp
 // Jeremy Campbell
 // Practice with minimal spanning tree algorithm
+// Prim's Algorithm
 // -------------------------------------------------
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <vector>
+#include <set>
 
 using std::cerr;
 using std::cin;
 using std::endl;
 using std::ifstream;
 using std::ofstream;
+using std::string;
+using std::vector;
+using std::set;
+
+class RoadMap
+{
+public:
+	explicit RoadMap(int size);
+	void inputRoads(ifstream &fin);
+	int findMinimumTotalCost();
+
+private:
+	// These vectors are conceptually indexed using letters A-Y
+	// but they are actually indexed using the underlying integer 
+	// implementation when being accessed
+	vector<vector<int>> adjacency;
+	vector<char> parents;
+	vector<int> values;
+	set<char> villages;
+
+	template <typename T>
+	void print2DVector(const vector<vector<T>> &v, string name);
+};
+
+
+RoadMap::RoadMap(int size)
+{
+	adjacency.resize(size, vector<int>(size, INT_MAX));
+	parents.resize(size, NULL);
+	values.resize(size, INT_MAX);
+}
+
+void RoadMap::inputRoads(ifstream &fin)
+{
+	for (int i = 0; i < adjacency.size() - 1; i++)
+	{
+		char village;
+		int numRoads;
+		fin >> village >> numRoads;
+		villages.insert(village);
+
+		for (int j = 0; j < numRoads; j++)
+		{
+			char nextVillage;
+			int roadLength;
+			fin >> nextVillage >> roadLength;
+
+			// Converting from char to int in order to index vector
+			int vIndex = village - 'A';
+			int nvIndex = nextVillage - 'A';
+			adjacency[vIndex][nvIndex] = roadLength;
+			adjacency[nvIndex][vIndex] = roadLength;
+		}
+	}
+	// The last village was not read in from the file
+	villages.insert('A' + adjacency.size() - 1);
+	//print2DVector(adjacency, "Adjacency");
+}
+
+// Uses Prim's algorithm for Minimal Spanning Tree
+int RoadMap::findMinimumTotalCost()
+{
+	set<char> t;
+
+
+
+	return -1;
+}
+
+template <typename T>
+void RoadMap::print2DVector(const vector<vector<T>> &v, string name)
+{
+	cerr << name << ":" << endl;
+	cerr << "-----------------------------" << endl;
+	for (vector<T> row : v)
+	{
+		for (T item : row)
+		{
+			cerr << item << " ";
+		}
+		cerr << endl;
+	}
+	cerr << "-----------------------------" << endl;
+}
 
 int main()
 {
@@ -23,5 +111,17 @@ int main()
 	}
 
 	ofstream fout("jungle.out");
+	string line;
+	fin >> line;
 
+	while (line != "0")
+	{
+		RoadMap jungleRoads(stoi(line));
+		jungleRoads.inputRoads(fin);
+		fout << jungleRoads.findMinimumTotalCost();
+
+		fin >> line;
+		if (line != "0")
+			fout << endl;
+	}
 }
