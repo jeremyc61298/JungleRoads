@@ -142,6 +142,7 @@
     <ClCompile Include="jungle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="jungle.ans" />
     <None Include="jungle.in" />
     <None Include="jungle.out" />
   </ItemGroup>

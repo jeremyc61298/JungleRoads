@@ -32,7 +32,7 @@ private:
 	// implementation when being accessed
 	vector<vector<int>> adjacency;
 	vector<char> parents;
-	vector<int> values;
+	vector<int> costs;
 	set<char> villages;
 
 	template <typename T>
@@ -44,7 +44,7 @@ RoadMap::RoadMap(int size)
 {
 	adjacency.resize(size, vector<int>(size, INT_MAX));
 	parents.resize(size, NULL);
-	values.resize(size, INT_MAX);
+	costs.resize(size, INT_MAX);
 }
 
 void RoadMap::inputRoads(ifstream &fin)
@@ -79,7 +79,7 @@ int RoadMap::findMinimumTotalCost()
 {
 	set<char> t;
 	// Root node will be last node
-	values[villages.size() - 1] = 0;
+	costs[villages.size() - 1] = 0;
 
 	while (t != villages)
 	{
@@ -87,10 +87,10 @@ int RoadMap::findMinimumTotalCost()
 		int smallestValue = INT_MAX;
 		for (char village : villages)
 		{
-			if (t.find(village) == t.end() && values[village - 'A'] < smallestValue)
+			if (t.find(village) == t.end() && costs[village - 'A'] < smallestValue)
 			{
 				selected = village;
-				smallestValue = values[village - 'A'];
+				smallestValue = costs[village - 'A'];
 			}
 		}
 		
@@ -99,16 +99,17 @@ int RoadMap::findMinimumTotalCost()
 		{
 			// If the village is not in set "t" and there is a road from selected->village 
 			// which has a cost less than value[village]
-			if (t.find(village) == t.end() && adjacency[selected - 'A'][village - 'A'] < values[village - 'A'])
+			if (t.find(village) == t.end() && adjacency[selected - 'A'][village - 'A'] < costs[village - 'A'])
 			{
 				parents[selected - 'A'] = selected;
-				values[village - 'A'] = adjacency[selected - 'A'][village - 'A'];
+				costs[village - 'A'] = adjacency[selected - 'A'][village - 'A'];
 			}
 		}
 	}
 
+	// Sum of values is the totalCost
 	int totalCost = 0;
-	for (int cost : values)
+	for (int cost : costs)
 	{
 		totalCost += cost;
 	}
@@ -116,6 +117,7 @@ int RoadMap::findMinimumTotalCost()
 	return totalCost;
 }
 
+// Debug Method
 template <typename T>
 void RoadMap::print2DVector(const vector<vector<T>> &v, string name)
 {
